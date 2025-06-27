@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import SEO from './SEO';
-import TabButton from './TabButton';
+import SEO from './SEO'; // Ensure SEO is imported
+import TabButton from './TabButton'; // Ensure TabButton is imported
 
 // FdiCalculator: Calculates FDI compliance based on sector and investment percentage.
 const FdiCalculator = ({ darkMode }) => {

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import SEO from './SEO';
+import SEO from './SEO'; // Ensure SEO is imported
 import StatCard from './StatCard';
 
 // Initialize Supabase client for HomeSection
-// Using environment variables for production, hardcoded for local fallback.
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://fsrgsdxalgbcsfjaxref.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzcmdzZHhhbGdiY3NmamF4cmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MzgxNzAsImV4cCI6MjA2MDMxNDE3MH0.AnLfcXr_4uVbHWCENDSbJryRZHMKgkG2_C3Ns_YoqTI';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // HomeSection: Displays market insights and latest regulatory news.
-// Fetches market data and news from Supabase.
 const HomeSection = ({ darkMode }) => {
   const [marketData, setMarketData] = useState([]);
   const [news, setNews] = useState([]);
@@ -20,7 +18,6 @@ const HomeSection = ({ darkMode }) => {
   const [newsError, setNewsError] = useState(null);
 
   useEffect(() => {
-    // Function to fetch market data from Supabase
     const fetchMarketData = async () => {
       setLoadingMarketData(true);
       setMarketError(null);
@@ -28,10 +25,7 @@ const HomeSection = ({ darkMode }) => {
         const { data, error } = await supabase
           .from('market_data')
           .select('*');
-
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
         setMarketData(data || []);
       } catch (err) {
         console.error("Error fetching market data:", err.message);
@@ -46,7 +40,6 @@ const HomeSection = ({ darkMode }) => {
       }
     };
 
-    // Function to fetch regulatory news from Supabase
     const fetchNewsData = async () => {
       setLoadingNews(true);
       setNewsError(null);
@@ -55,10 +48,7 @@ const HomeSection = ({ darkMode }) => {
           .from('regulatory_news')
           .select('*')
           .order('date', { ascending: false });
-
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
         setNews(data || []);
       } catch (err) {
         console.error("Error fetching news data:", err.message);
@@ -79,10 +69,11 @@ const HomeSection = ({ darkMode }) => {
 
   return (
     <div className={`rounded-xl p-6 ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} shadow-md`}>
+      {/* SEO component with specific metadata for the Home/Insights page */}
       <SEO
-        title="Market Insights Dashboard"
-        description="Latest updates on M&A, FDI/ODI, and SEBI compliances in India"
-        keywords="FDI, ODI, SEBI, compliance, India, M&A"
+        title="Market Insights Dashboard - WhoGotWho.com"
+        description="Latest updates and key statistics on Mergers & Acquisitions, Foreign Direct Investment (FDI), Overseas Direct Investment (ODI), and SEBI compliances in India."
+        keywords="market insights, M&A, FDI, ODI, SEBI, India, regulations, compliance, investment, news, financial trends"
       />
 
       <h2 className="text-2xl md:text-3xl font-bold mb-6 flex items-center">

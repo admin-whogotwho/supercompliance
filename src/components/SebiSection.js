@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SEO from './SEO';
+import SEO from './SEO'; // Ensure SEO is imported
 
 // SebiSection: Provides a calculator for SEBI compliance based on entity and transaction type.
 const SebiSection = ({ darkMode }) => {
@@ -92,10 +92,11 @@ const SebiSection = ({ darkMode }) => {
 
   return (
     <div className={`rounded-xl ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} shadow-md overflow-hidden`}>
+      {/* SEO component with specific metadata for the SEBI page */}
       <SEO
-        title="SEBI Compliances"
-        description="Calculators and guides for SEBI regulations in India"
-        keywords="SEBI, compliance, India, regulations"
+        title="SEBI Compliance & Regulations - WhoGotWho.com"
+        description="Calculate and understand SEBI compliance requirements including SAST, PIT, and LODR regulations in India for listed companies, investors, and intermediaries."
+        keywords="SEBI, compliance, India, regulations, SAST, PIT, LODR, listed company, insider trading, takeover, disclosure, financial results"
       />
 
       <div className="p-6">

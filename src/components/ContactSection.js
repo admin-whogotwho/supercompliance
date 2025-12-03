@@ -28,7 +28,7 @@ const ContactSection = ({ darkMode }) => {
             </div>
             <div>
               <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100">Email</h4>
-              <a href="mailto:admin@whogotwho.com" className={`block mt-1 ${darkMode ? "text-blue-300 hover:text-blue-200" : "text-blue-600 hover:text-blue-800"} text-base`}>
+              <a href="mailto:jainsaurabh@bsdgroup.in" className={`block mt-1 ${darkMode ? "text-blue-300 hover:text-blue-200" : "text-blue-600 hover:text-blue-800"} text-base`}>
                 admin@whogotwho.com
               </a>
             </div>

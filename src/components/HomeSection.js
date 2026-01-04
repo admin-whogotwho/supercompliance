@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
 import SEO from './SEO'; 
-import StatCard from './StatCard';
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://fsrgsdxalgbcsfjaxref.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-key';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomeSection = ({ darkMode }) => {
-  const [marketData, setMarketData] = useState([]);
-  const [news, setNews] = useState([]);
   const [geoGreeting, setGeoGreeting] = useState({ lang: 'en', text: 'Practitioner-led India Entry & Compliance Utility.' });
-
   const LINKEDIN_PROFILE = "https://www.linkedin.com/in/saurabh-jain-b5467a3a/";
 
   useEffect(() => {
@@ -25,27 +16,11 @@ const HomeSection = ({ darkMode }) => {
     };
     const langKey = Object.keys(hooks).find(key => userLang.startsWith(key)) || 'en';
     setGeoGreeting({ lang: langKey, text: hooks[langKey] });
-
-    const fetchData = async () => {
-      try {
-        const [marketRes, newsRes] = await Promise.all([
-          supabase.from('market_data').select('*'),
-          supabase.from('regulatory_news').select('*').order('date', { ascending: false }).limit(3)
-        ]);
-        setMarketData(marketRes.data || [
-          { title: 'FDI Inflows', value: '$9.34B', change: '-4.5%', icon: '📈', id: 1 },
-          { title: 'M&A Deals', value: '67', change: '+204%', icon: '💼', id: 2 },
-          { title: 'SEBI Filings', value: '46', change: '+200%', icon: '📑', id: 3 }
-        ]);
-        setNews(newsRes.data || []);
-      } catch (err) { console.error(err); }
-    };
-    fetchData();
   }, []);
 
   return (
-    <div className="space-y-12 pb-24 selection:bg-emerald-200">
-      <SEO title="WhoGotWho | FDI Entry & Domestic Corporate Advisory" />
+    <div className="space-y-16 pb-24 selection:bg-indigo-500 selection:text-white">
+      <SEO title="WhoGotWho | Strategic Regulatory Command" />
 
       {/* --- 1. THE SPLIT HERO SECTION --- */}
       <section className={`relative rounded-[3.5rem] overflow-hidden ${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-indigo-950'} text-white shadow-2xl`}>
@@ -58,10 +33,9 @@ const HomeSection = ({ darkMode }) => {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Inbound Investment</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic">GLOBAL <br/><span className="text-emerald-400 not-italic">ENTRY.</span></h1>
-              <p className="text-lg text-indigo-100/70 font-medium leading-relaxed">{geoGreeting.text}</p>
-              {/* Pointing directly to LinkedIn */}
-              <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-4 bg-emerald-500 text-indigo-950 font-black rounded-2xl hover:scale-105 transition-all shadow-lg">Start India Entry</a>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter italic leading-none">GLOBAL <br/><span className="text-emerald-400 not-italic uppercase">Entry.</span></h1>
+              <p className="text-lg text-indigo-100/70 font-medium leading-relaxed max-w-sm">{geoGreeting.text}</p>
+              <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-4 bg-emerald-500 text-indigo-950 font-black rounded-2xl hover:scale-105 transition-all shadow-lg uppercase text-xs tracking-widest">Start India Entry</a>
             </div>
           </div>
 
@@ -72,15 +46,14 @@ const HomeSection = ({ darkMode }) => {
                 <span className="w-2 h-2 rounded-full bg-blue-400"></span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-300">Domestic Corporate</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic uppercase">Indian <br/><span className="text-blue-400 not-italic">Enterprise.</span></h2>
-              <ul className="grid grid-cols-2 gap-3 text-sm font-bold text-indigo-100/80">
-                <li className="flex items-center gap-2">🔹 FEMA Advisory</li>
-                <li className="flex items-center gap-2">🔹 Tax Litigation</li>
-                <li className="flex items-center gap-2">🔹 M&A Deals</li>
-                <li className="flex items-center gap-2">🔹 IPO Readiness</li>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic uppercase leading-none">Indian <br/><span className="text-blue-400 not-italic uppercase">Enterprise.</span></h2>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-bold text-indigo-100/80">
+                <li className="flex items-center gap-2 underline decoration-blue-500/50 underline-offset-4">FEMA Advisory</li>
+                <li className="flex items-center gap-2 underline decoration-blue-500/50 underline-offset-4">Tax Litigation</li>
+                <li className="flex items-center gap-2 underline decoration-blue-500/50 underline-offset-4">M&A Deals</li>
+                <li className="flex items-center gap-2 underline decoration-blue-500/50 underline-offset-4">IPO Readiness</li>
               </ul>
-              {/* Pointing directly to LinkedIn */}
-              <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-4 bg-white/10 border border-white/20 text-white font-black rounded-2xl hover:bg-white/20 transition-all">Corporate Services</a>
+              <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-4 bg-white/10 border border-white/20 text-white font-black rounded-2xl hover:bg-white/20 transition-all uppercase text-xs tracking-widest">Corporate Services</a>
             </div>
           </div>
         </div>
@@ -93,18 +66,18 @@ const HomeSection = ({ darkMode }) => {
           <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-900"></div>
         </div>
         <div className="flex-1 text-center lg:text-left">
-          <h3 className="text-2xl font-black tracking-tight">Direct Access to the Practitioner</h3>
+          <h3 className="text-2xl font-black tracking-tight uppercase italic">Direct Access to the Practitioner</h3>
           <p className="text-slate-500 dark:text-indigo-200 font-medium">
             Bridging the gap between global capital and Indian regulatory frameworks. 
-            Connect with Saurabh Jain for specialized advisory.
+            No gatekeepers. Directly connect with Saurabh Jain for specialized advisory.
           </p>
         </div>
-        <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#0077b5] text-white font-bold rounded-2xl flex items-center gap-3 hover:scale-105 transition-all shadow-lg">
+        <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#0077b5] text-white font-black rounded-2xl flex items-center gap-3 hover:scale-105 transition-all shadow-lg text-xs tracking-widest uppercase">
           Connect on LinkedIn ↗
         </a>
       </section>
 
-      {/* --- 3. TRUST STATS (Updated with your requirements) --- */}
+      {/* --- 3. TRUST STATS --- */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4">
         {[
           { label: 'Company Reg (FDI)', val: '21 Days' },
@@ -112,36 +85,89 @@ const HomeSection = ({ darkMode }) => {
           { label: 'FEMA NCLT', val: 'Litigation' },
           { label: 'IPO Advisory', val: 'MSME' }
         ].map((item, i) => (
-          <div key={i} className={`p-6 rounded-[2rem] text-center border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
-            <p className="text-2xl font-black text-indigo-950 dark:text-emerald-400 tracking-tighter">{item.val}</p>
+          <div key={i} className={`p-8 rounded-[2rem] text-center border-2 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+            <p className="text-2xl font-black text-indigo-950 dark:text-emerald-400 tracking-tighter uppercase italic">{item.val}</p>
+            <div className="w-8 h-1 bg-indigo-500 mx-auto my-3 rounded-full opacity-30"></div>
             <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mt-1">{item.label}</p>
           </div>
         ))}
       </div>
 
-      {/* --- 4. DATA & NEWS --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className={`lg:col-span-2 rounded-[3rem] p-10 ${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-xl'} border border-slate-100`}>
-          <h3 className="text-xl font-black mb-8 flex items-center gap-3 uppercase tracking-tighter italic">
-             <span className="p-3 bg-indigo-50 dark:bg-indigo-950 rounded-2xl text-lg">📉</span> Market Pulse
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {marketData.map((stat) => <StatCard key={stat.id} {...stat} darkMode={darkMode} />)}
-          </div>
+      {/* --- 4. EXECUTION ARCHITECTURE (REPLACES MARKET PULSE) --- */}
+      <section className="space-y-12">
+        <div className="text-left space-y-2">
+            <h2 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter">Execution Architecture</h2>
+            <p className={`text-lg font-medium max-w-2xl ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            Move beyond static news. Access the logic used to navigate India's most complex capital routes and regulatory hurdles.
+            </p>
         </div>
-        
-        <div className={`rounded-[3rem] p-10 ${darkMode ? 'bg-slate-800' : 'bg-slate-100/50'}`}>
-          <h3 className="text-lg font-black mb-8 uppercase tracking-tighter italic">Regulatory News</h3>
-          <div className="space-y-8">
-            {news.map(item => (
-              <div key={item.id} className="group cursor-pointer">
-                <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{new Date(item.date).toLocaleDateString()}</p>
-                <h4 className="font-bold text-base group-hover:text-indigo-600 transition-colors leading-snug">{item.title}</h4>
-              </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+            {
+                title: "The Inbound Route",
+                tag: "FDI / FEMA",
+                desc: "Navigating Press Note 3 (2020) restrictions and UBO hurdles for bordering nations and sensitive sectors.",
+                action: "View Strategy",
+                icon: "🎯",
+                link: "/fdi-odi",
+                color: "hover:border-emerald-500"
+            },
+            {
+                title: "The Tax Bridge",
+                tag: "M&A / INCOME TAX",
+                desc: "Optimizing Section 50B Slump Sales vs. 47(vi) Demerger neutralities for tax-efficient entity restructuring.",
+                action: "Calculate Value",
+                icon: "💎",
+                link: "/mna",
+                color: "hover:border-blue-500"
+            },
+            {
+                title: "The Public Gate",
+                tag: "SEBI / SAST",
+                desc: "Triggering Regulation 3(1) thresholds and managing open offer pricing under the Takeover Code.",
+                action: "Check Triggers",
+                icon: "🔒",
+                link: "/sebi",
+                color: "hover:border-purple-500"
+            },
+            {
+                title: "The Exit Logic",
+                tag: "IPO / LISTING",
+                desc: "Pre-IPO cap-table hygiene, MSME-to-Mainboard migration, and managing SDD under PIT regulations.",
+                action: "Analyze Readiness",
+                icon: "🚀",
+                link: "/sebi",
+                color: "hover:border-indigo-600"
+            }
+            ].map((item, i) => (
+            <Link 
+                to={item.link} 
+                key={i} 
+                className={`group relative p-10 rounded-[3rem] border-2 transition-all duration-500 ${item.color} ${
+                darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-xl'
+                }`}
+            >
+                <div className="flex justify-between items-start mb-8">
+                <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">{item.tag}</span>
+                    <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none">{item.title}</h3>
+                </div>
+                <span className="text-4xl opacity-40 group-hover:opacity-100 group-hover:rotate-12 transition-all">{item.icon}</span>
+                </div>
+                
+                <p className={`text-base font-medium mb-8 leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                {item.desc}
+                </p>
+
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-500">
+                <span>{item.action}</span>
+                <span className="group-hover:translate-x-2 transition-transform">→</span>
+                </div>
+            </Link>
             ))}
-          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

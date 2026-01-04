@@ -1,15 +1,16 @@
-import React from 'react'; // <--- IMPORTANT: Import React
+import React from 'react';
 
-// TabButton component: Used for tabbed navigation within sections.
 const TabButton = ({ children, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center justify-center gap-2 flex-grow px-4 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none ${active
-      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-      : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 dark:text-gray-400'}`}
+    className={`flex-grow py-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-4 focus:outline-none ${
+      active
+        ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-500/5'
+        : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+    }`}
   >
     {children}
   </button>
 );
 
-export default TabButton; // <--- Export the component
+export default TabButton;

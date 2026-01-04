@@ -1,168 +1,191 @@
-import React, { useState } from 'react';
-import SEO from './SEO'; // Ensure SEO is imported
+import React, { useState, useEffect } from 'react';
+import SEO from './SEO';
 
-// SebiSection: Provides a calculator for SEBI compliance based on entity and transaction type.
 const SebiSection = ({ darkMode }) => {
   const [entityType, setEntityType] = useState('listed_company');
-  const [transactionType, setTransactionType] = useState('board_meeting_intimation');
+  const [transactionType, setTransactionType] = useState('takeover_disclosure');
   const [sharesPercentage, setSharesPercentage] = useState(5);
-  const [result, setResult] = useState('');
+  const [marketCapRank, setMarketCapRank] = useState(250); // For BRSR/ESG logic
+  const [result, setResult] = useState(null);
 
   const calculateSebi = () => {
-    let msg = `<div class="${darkMode ? 'text-gray-200' : 'text-gray-800'}">`;
-    msg += `<h3 class="text-xl font-bold mb-4 ${darkMode ? 'text-purple-300' : 'text-purple-700'}">SEBI Compliance Result</h3>`;
-    msg += `<p><strong>Entity:</strong> ${entityType.replace(/_/g, ' ').toUpperCase()}</p>`;
-    msg += `<p><strong>Transaction:</strong> ${transactionType.replace(/_/g, ' ').toUpperCase()}</p>`;
+    let status = "Compliant";
+    let color = "text-emerald-500";
+    let alerts = [];
+    let regs = [];
+    let timeline = "";
 
-    if (['takeover_disclosure', 'insider_trading_disclosure'].includes(transactionType)) {
-      msg += `<p><strong>Shareholding:</strong> ${sharesPercentage}%</p>`;
-    }
-
-    if (entityType === 'listed_company') {
-      switch(transactionType) {
-        case 'takeover_disclosure':
-          if (sharesPercentage >= 25) {
-            msg += `<p class="text-red-500 font-bold mt-2">Mandatory open offer triggered (25% threshold)</p>`;
-            msg += `<ul class="list-disc pl-8 mt-2 space-y-1 text-sm">
-              <li>Public announcement within 5 working days</li>
-              <li>Detailed disclosure in letter of offer</li>
-              <li>Minimum offer period of 10 working days</li>
-            </ul>`;
-          } else if (sharesPercentage >= 5) {
-            msg += `<p class="text-orange-500 font-bold mt-2">Disclosure required under SAST Regulations</p>`;
-            msg += `<ul class="list-disc pl-8 mt-2 space-y-1 text-sm">
-              <li>Disclosure to company and stock exchanges within 2 working days</li>
-              <li>Continual disclosure for every 2% change thereafter (on acquisition or disposal)</li>
-              </ul>`;
-          } else {
-            msg += `<p class="text-green-500 font-bold mt-2">No disclosure requirement under SAST for this threshold</p>`;
-          }
-          break;
-
-        case 'insider_trading_disclosure':
-          msg += `<p class="text-blue-500 font-bold mt-2">PIT Regulations apply</p>`;
-          if (sharesPercentage > 0.25 || sharesPercentage === 0) {
-            msg += `<ul class="list-disc pl-8 mt-2 space-y-1 text-sm">
-              <li>Initial disclosure required if becoming KMP/promoter (holding >0.25% equity)</li>
-              <li>Continual disclosure for trades exceeding ₹10 lakhs in value over a quarter</li>
-              <li>Trading window restrictions apply during unpublished price sensitive information (UPSI) periods</li>
-            </ul>`;
-          }
-          break;
-
-        case 'board_meeting_intimation':
-          msg += `<p class="text-blue-500 font-bold mt-2">LODR Regulations apply</p>`;
-          msg += `<ul class="list-disc pl-8 mt-2 space-y-1 text-sm">
-            <li>Intimate stock exchanges at least 5 working days in advance (for financial results, dividend, etc.)</li>
-            <li>Disclose outcome within 30 minutes of meeting conclusion to stock exchanges</li>
-          </ul>`;
-          break;
-
-        case 'financial_results':
-          msg += `<p class="text-blue-500 font-bold mt-2">LODR Regulations apply</p>`;
-          msg += `<ul class="list-disc pl-8 mt-2 space-y-1 text-sm">
-            <li>Submit quarterly/half-yearly/annual financial results within prescribed timelines</li>
-            <li>Publish extracts in newspapers</li>
-            <li>Mandatory review by Audit Committee and approval by Board of Directors</li>
-          </ul>`;
-          break;
-        default:
-          msg += `<p class="text-orange-500 font-bold mt-2">General SEBI compliance requirements apply</p>`;
-      }
-    } else if (entityType === 'investor') {
-      if (transactionType === 'takeover_disclosure' && sharesPercentage >= 5) {
-        msg += `<p class="text-orange-500 font-bold mt-2">Disclosure required under SAST Regulations (Acquirer)</p>`;
-        msg += `<p class="mt-2 text-sm">Submit disclosure to target company and stock exchanges within 2 working days of acquisition/disposal.</p>`;
-      } else if (transactionType === 'insider_trading_disclosure' && sharesPercentage > 0.25) {
-        msg += `<p class="text-blue-500 font-bold mt-2">PIT Regulations apply (Designated Person / Promoter)</p>`;
-        msg += `<p class="mt-2 text-sm">Initial disclosure required if holding >0.25% or upon becoming a designated person. Continual disclosure for trades exceeding ₹10 lakhs.</p>`;
+    // 1. SAST (Takeover) Logic - 2026 Standards
+    if (transactionType === 'takeover_disclosure') {
+      regs.push("SEBI (SAST) Regulations, 2011");
+      if (sharesPercentage >= 25) {
+        status = "TRIGGER TRIGGERED";
+        color = "text-red-500";
+        alerts.push("Mandatory Open Offer triggered (Reg 3).", "Public Announcement (PA) required within 5 working days.", "Offer size: Min 26% of total voting capital.");
+      } else if (sharesPercentage >= 5) {
+        status = "DISCLOSURE REQUIRED";
+        color = "text-orange-500";
+        alerts.push("Initial disclosure under Reg 29(1).", "Submit to SE and Target Co within 2 working days.");
       } else {
-        msg += `<p class="text-green-500 font-bold mt-2">No specific disclosure requirement for this threshold/type for Investor.</p>`;
+        alerts.push("Below 5% threshold. No immediate SAST disclosure.");
       }
-    } else if (entityType === 'intermediary') {
-      msg += `<p class="text-blue-500 font-bold mt-2">Intermediaries are subject to specific SEBI regulations.</p>`;
-      msg += `<p class="mt-2 text-sm">This includes regulations for Stock Brokers, Merchant Bankers, Registrars, etc. and general obligations under LODR and PIT if applicable.</p>`;
     }
 
-    msg += `<p class="mt-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}">Refer to SEBI (Substantial Acquisition of Shares and Takeovers) Regulations, 2011, SEBI (Prohibition of Insider Trading) Regulations, 2015 and SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 for complete details.</p>`;
-    msg += `</div>`;
+    // 2. PIT (Insider Trading) - 2026 Standards
+    if (transactionType === 'insider_trading_disclosure') {
+      regs.push("SEBI (PIT) Regulations, 2015");
+      status = "MONITORING";
+      color = "text-blue-500";
+      alerts.push("SDD (Structured Digital Database) entry mandatory.", "Trading Window closure applies during UPSI (Financials/M&A).");
+      if (sharesPercentage > 0) {
+        alerts.push("Continual Disclosure (Form C) if trade value > ₹10 Lakhs in a quarter.");
+      }
+    }
 
-    setResult(msg);
+    // 3. LODR & ESG - High Complexity Logic
+    if (transactionType === 'financial_results') {
+      regs.push("SEBI (LODR) Regulations, 2015", "BRSR Framework");
+      timeline = "45 Days (Quarterly) / 60 Days (Annual)";
+      alerts.push("Board intimation 5 working days in advance.", "Audit Committee review is mandatory.");
+      
+      // ESG/BRSR Core Logic (New for 2026)
+      if (marketCapRank <= 500) {
+        status = "BRSR CORE MANDATORY";
+        color = "text-purple-500";
+        alerts.push("Top 500 entity: Reasonable Assurance of 'BRSR Core' required for FY 25-26.");
+      }
+      if (marketCapRank <= 1000) {
+        alerts.push("Mandatory ESG Value Chain disclosures (Reg 34) for top 1000.");
+      }
+    }
+
+    // 4. RPT (Related Party) New 2026 Rules
+    if (transactionType === 'rpt_approval') {
+      regs.push("Reg 23 of LODR (2025-26 Amendment)");
+      status = "RESTRICTED";
+      color = "text-yellow-600";
+      alerts.push("Material RPT threshold: Lower of ₹1000 Cr or 10% of annual turnover.", "Prior Audit Committee approval mandatory (only independent members vote).");
+    }
+
+    setResult({ status, color, alerts, regs, timeline });
   };
 
+  useEffect(calculateSebi, [entityType, transactionType, sharesPercentage, marketCapRank]);
+
   return (
-    <div className={`rounded-xl ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} shadow-md overflow-hidden`}>
-      {/* SEO component with specific metadata for the SEBI page */}
-      <SEO
-        title="SEBI Compliance & Regulations - WhoGotWho.com"
-        description="Calculate and understand SEBI compliance requirements including SAST, PIT, and LODR regulations in India for listed companies, investors, and intermediaries."
-        keywords="SEBI, compliance, India, regulations, SAST, PIT, LODR, listed company, insider trading, takeover, disclosure, financial results"
-      />
+    <div className={`p-8 rounded-[3rem] border transition-all duration-500 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white shadow-2xl'}`}>
+      <SEO title="SEBI Compliance Hub 2026" />
+      
+      <div className="flex flex-col md:flex-row gap-12">
+        {/* INPUT: COMPLIANCE CONFIGURATOR */}
+        <div className="w-full md:w-1/2 space-y-8">
+          <div>
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase mb-2">Compliance <span className="text-purple-600">Engine</span></h2>
+            <p className="text-xs font-bold opacity-40 uppercase tracking-widest">Master Directions 2026 v4.2</p>
+          </div>
 
-      <div className="p-6">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 flex items-center">
-          <span className="mr-3 text-purple-500">⚖️</span> SEBI Compliance Calculator
-        </h2>
+          <div className="space-y-6">
+            <div className="group">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 block mb-2 group-hover:text-purple-500 transition-colors">Target Framework</label>
+              <select 
+                value={transactionType} 
+                onChange={(e) => setTransactionType(e.target.value)}
+                className={`w-full p-4 rounded-2xl border-2 ${darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-100'} font-bold focus:border-purple-500 outline-none transition-all`}
+              >
+                <option value="takeover_disclosure">SAST: Takeover & Acquisitions</option>
+                <option value="insider_trading_disclosure">PIT: Insider Trading / SDD</option>
+                <option value="financial_results">LODR: Financials & BRSR/ESG</option>
+                <option value="rpt_approval">LODR: Related Party (RPT)</option>
+              </select>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} shadow-inner`}>
-            <h3 className="text-xl font-semibold mb-4">SEBI Parameters</h3>
-            <div className="space-y-4">
-              <div>
-                <label className={`block mb-2 text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Entity Type</label>
-                <select
-                  value={entityType}
-                  onChange={(e) => setEntityType(e.target.value)}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-purple-500 focus:border-purple-500`}
-                >
-                  <option value="listed_company">Listed Company</option>
-                  <option value="investor">Investor</option>
-                  <option value="intermediary">Intermediary</option>
-                </select>
+            {transactionType === 'financial_results' && (
+              <div className="animate-in slide-in-from-left duration-300">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 block mb-2">Market Cap Rank (Top X)</label>
+                <input 
+                  type="range" min="1" max="2000" value={marketCapRank} 
+                  onChange={(e) => setMarketCapRank(Number(e.target.value))}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                />
+                <div className="flex justify-between text-[10px] font-bold mt-2 opacity-60">
+                  <span>Top 100 (Blue Chip)</span>
+                  <span>Rank: {marketCapRank}</span>
+                </div>
+              </div>
+            )}
+
+            {(transactionType.includes('disclosure')) && (
+              <div className="animate-in slide-in-from-left duration-300">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 block mb-2">Shareholding: {sharesPercentage}%</label>
+                <input 
+                  type="range" min="0" max="100" value={sharesPercentage} 
+                  onChange={(e) => setSharesPercentage(Number(e.target.value))}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* OUTPUT: REAL-TIME ADVISORY */}
+        <div className={`w-full md:w-1/2 p-10 rounded-[2.5rem] border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'} relative overflow-hidden`}>
+          {result && (
+            <div className="space-y-6 relative z-10">
+              <div className="flex justify-between items-start">
+                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black border-2 ${result.color} border-current uppercase`}>
+                  {result.status}
+                </span>
+                <span className="text-3xl">⚖️</span>
               </div>
 
-              <div>
-                <label className={`block mb-2 text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Transaction Type</label>
-                <select
-                  value={transactionType}
-                  onChange={(e) => setTransactionType(e.target.value)}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-purple-500 focus:border-purple-500`}
-                >
-                  <option value="takeover_disclosure">Takeover Disclosure</option>
-                  <option value="insider_trading_disclosure">Insider Trading Disclosure</option>
-                  <option value="board_meeting_intimation">Board Meeting Intimation</option>
-                  <option value="financial_results">Financial Results Filing</option>
-                </select>
+              <div className="space-y-4">
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Directives & Actions</p>
+                <div className="space-y-3">
+                  {result.alerts.map((alert, i) => (
+                    <div key={i} className="flex gap-3 text-sm font-bold leading-tight">
+                      <span className="text-purple-500">▶</span> {alert}
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {(transactionType === 'takeover_disclosure' || transactionType === 'insider_trading_disclosure') && (
-                <div>
-                  <label className={`block mb-2 text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Shareholding Percentage</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={sharesPercentage}
-                    onChange={(e) => setSharesPercentage(Number(e.target.value))}
-                    className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-600 border-gray-500 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-purple-500 focus:border-purple-500`}
-                  />
+              {result.timeline && (
+                <div className={`p-4 rounded-2xl ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'} border-l-4 border-purple-500`}>
+                  <p className="text-[10px] font-black uppercase opacity-50">Statutory Timeline</p>
+                  <p className="text-lg font-black tracking-tight">{result.timeline}</p>
                 </div>
               )}
 
-              <button
-                onClick={calculateSebi}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75"
-              >
-                Check Compliance
-              </button>
+              <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                <p className="text-[10px] font-black uppercase opacity-40 mb-2">Legal References</p>
+                <div className="flex flex-wrap gap-2">
+                  {result.regs.map(r => <span key={r} className="text-[9px] bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-md font-bold">{r}</span>)}
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'} shadow-inner overflow-auto`}>
-            <h3 className="text-xl font-semibold mb-4">Compliance Result</h3>
-            <div dangerouslySetInnerHTML={{ __html: result }} />
-          </div>
+          )}
+          
+          {/* Subtle background decoration */}
+          <div className="absolute -bottom-10 -right-10 text-9xl font-black opacity-[0.03] select-none uppercase italic">SEBI</div>
         </div>
+      </div>
+
+      
+
+      {/* FOOTER INFO TILES */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-12">
+        {[
+          { icon: "🛡️", title: "SDD Compliance", desc: "Structured Digital Database logs mandatory for all UPSI." },
+          { icon: "🌍", title: "ESG/BRSR", desc: "Core assurance required for Top 500 listed entities." },
+          { icon: "⚡", title: "T+0 Settlement", desc: "Shortened cycles affecting margin and trade reporting." },
+          { icon: "🚨", title: "Penalty Matrix", desc: "Violations can trigger Section 15HB proceedings." }
+        ].map((item, idx) => (
+          <div key={idx} className={`p-5 rounded-3xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-transparent'} hover:scale-105 transition-transform cursor-pointer`}>
+            <div className="text-2xl mb-2">{item.icon}</div>
+            <h4 className="text-[10px] font-black uppercase tracking-widest mb-1">{item.title}</h4>
+            <p className="text-[10px] font-medium opacity-60 leading-normal">{item.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

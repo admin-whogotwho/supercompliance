@@ -1,27 +1,21 @@
-import React from 'react'; // <--- IMPORTANT: Import React
+import React from 'react';
 
-// Footer component: Displays copyright and other links.
 const Footer = ({ darkMode }) => {
   return (
-    <footer className={`py-6 ${darkMode ? 'bg-gray-900 text-gray-300' : 'bg-gray-100 text-gray-700'} mt-10 rounded-t-xl shadow-inner`}>
-      <div className="container mx-auto px-4 text-center text-sm">
-        <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6">
+    <footer className={`py-12 mt-20 border-t ${darkMode ? 'bg-slate-950 border-slate-900 text-slate-500' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+      <div className="container mx-auto px-6 text-center">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-8 text-[10px] font-black uppercase tracking-widest">
           <span>&copy; {new Date().getFullYear()} WhoGotWho.com</span>
-          {/* These are example valid links for SEO and accessibility */}
-          <a href="/privacy-policy" className="hover:underline text-blue-600 dark:text-blue-400">Privacy Policy</a>
-          <a href="/terms-of-service" className="hover:underline text-blue-600 dark:text-blue-400">Terms of Service</a>
-          <a href="/disclaimer" className="hover:underline text-blue-600 dark:text-blue-400">Disclaimer</a>
+          <a href="/privacy" className="hover:text-indigo-500 transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-indigo-500 transition-colors">Terms</a>
+          <a href="/disclaimer" className="hover:text-indigo-500 transition-colors">Disclaimer</a>
         </div>
-        <p className="mt-4 text-xs max-w-3xl mx-auto leading-relaxed">
-          This website provides simplified information and illustrative calculators for M&A, FDI/ODI, and SEBI compliances.
-          The content is for general guidance only and should not be considered as professional advice.
-        </p>
-        <p className="mt-2 text-xs">
-          Supabase integration for market data requires setting up your own Supabase project and table.
+        <p className="text-[10px] max-w-2xl mx-auto leading-loose opacity-60 uppercase font-bold">
+          The information and calculators provided are for illustrative purposes only and do not constitute legal or financial advice. M&A and Regulatory compliance in India are subject to frequent changes.
         </p>
       </div>
     </footer>
   );
 };
 
-export default Footer; // <--- Export the component
+export default Footer;

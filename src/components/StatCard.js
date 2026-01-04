@@ -1,33 +1,34 @@
-    import React from 'react'; // <--- IMPORTANT: Import React
+import React from 'react';
 
-    // StatCard component: Displays a single statistic with a title, value, change, and icon.
-    const StatCard = ({ title, value, change, icon, darkMode }) => {
-      // Check if the change string starts with a '+' or if the numeric value is positive.
-      // This ensures 'increase' lines are green, 'decrease' are red, and others (like 'flat') are grey.
-      const isPositive = change && change.startsWith('+');
-      const isNegative = change && (change.startsWith('-') || change.toLowerCase().includes('drop') || change.toLowerCase().includes('decrease'));
+const StatCard = ({ title, value, change, icon, darkMode }) => {
+  // Logic to determine color based on content
+  const isPositive = change && (change.startsWith('+') || change.toLowerCase().includes('bullish'));
+  const isNegative = change && (change.startsWith('-') || change.toLowerCase().includes('risk') || change.toLowerCase().includes('high'));
 
-      const changeColorClass = isPositive
-        ? 'text-green-500 dark:text-green-400'
-        : isNegative
-          ? 'text-red-500 dark:text-red-400'
-          : 'text-gray-500 dark:text-gray-400'; // Neutral color for no significant change or "drop" without '+'
+  const changeColorClass = isPositive
+    ? 'text-emerald-500'
+    : isNegative
+      ? 'text-rose-500'
+      : 'text-slate-400';
 
-      return (
-        <div className={`rounded-lg p-6 ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'} shadow-lg border ${darkMode ? 'border-gray-600' : 'border-gray-100'}`}>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{title}</p>
-              <p className="text-3xl font-extrabold mt-1">{value}</p>
-            </div>
-            <span className="text-4xl">{icon}</span>
-          </div>
-          <p className={`mt-4 text-sm font-semibold ${changeColorClass}`}>
-            {change} from last quarter
-          </p>
+  return (
+    <div className={`rounded-[2rem] p-8 transition-all hover:scale-[1.02] border-2 ${
+      darkMode ? 'bg-slate-900 border-slate-800 text-white shadow-2xl' : 'bg-white border-slate-100 text-slate-900 shadow-xl'
+    }`}>
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <p className={`text-[10px] font-black uppercase tracking-widest opacity-50`}>{title}</p>
+          <p className="text-4xl font-black italic tracking-tighter">{value}</p>
         </div>
-      );
-    };
+        <span className="text-4xl grayscale opacity-50">{icon}</span>
+      </div>
+      {change && (
+        <p className={`mt-6 text-[10px] font-black uppercase tracking-widest ${changeColorClass}`}>
+          {change}
+        </p>
+      )}
+    </div>
+  );
+};
 
-    export default StatCard; // <--- Export the component
-    
+export default StatCard;
